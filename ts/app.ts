@@ -3,7 +3,7 @@ const boardDiv = document.querySelector('.board')
 let currPlayer = 'O'
 let winner: undefined | string | number = undefined
 
-type Board = string[][] | number[][]
+type Board = string[][]
 
 const changePlayer = () => {
 	currPlayer === 'O' ? (currPlayer = 'X') : (currPlayer = 'O')
@@ -53,7 +53,6 @@ const checkForWinner = (board: Board) => {
 			winner = board[i][0]
 		}
 		if (winner !== undefined) {
-			console.log('The winner is', winner)
 			showPopup(winner)
 			return
 		}
@@ -64,7 +63,6 @@ const checkForWinner = (board: Board) => {
 		if (board[0][i] === board[1][i] && board[0][i] === board[2][i]) {
 			winner = board[0][i]
 			if (winner !== undefined) {
-				console.log('The winner is', winner)
 				showPopup(winner)
 				return
 			}
@@ -85,10 +83,19 @@ const checkForWinner = (board: Board) => {
 			winner = currPlayer
 		}
 		if (winner !== undefined) {
-			console.log('The winner is', winner)
 			showPopup(winner)
 			return
 		}
+	}
+
+	// check for tie
+
+	const flattenedBoard = board.reduce((acc, curr) => [...acc, ...curr], [])
+
+	if (flattenedBoard.every((cell) => cell !== undefined)) {
+		winner = 'Tie'
+		showPopup(winner)
+		return
 	}
 }
 
@@ -97,7 +104,10 @@ const showPopup = (winner: string | number) => {
 	popup.classList.add('popup')
 	const p = document.createElement('p')
 
-	p.textContent = `${winner} wins!`
+	winner === 'Tie'
+		? (p.textContent = 'Tie!')
+		: (p.textContent = `${winner} wins!`)
+
 	popup.appendChild(p)
 
 	const restartBtn = document.createElement('button')
